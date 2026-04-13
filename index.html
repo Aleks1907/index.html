@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Betrag Login</title>
+<title>Offener Betrag</title>
 
 <style>
 body {
@@ -33,6 +33,7 @@ button {
 .amount {
     font-size: 30px;
     color: red;
+    margin-top: 10px;
 }
 </style>
 </head>
@@ -42,34 +43,54 @@ button {
 <h2>💰 Offener Betrag</h2>
 
 <div id="login">
-    <input type="text" id="user" placeholder="Name eingeben">
+    <input type="text" id="user" placeholder="Name">
     <br>
-    <button onclick="loadData()">Anzeigen</button>
+    <input type="password" id="code" placeholder="Code">
+    <br>
+    <button onclick="login()">Anzeigen</button>
 </div>
 
 <div id="app"></div>
 
 <script>
 
-// 🔗 Google Sheets CSV (HIER EINSETZEN)
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/DEINE_ID/export?format=csv&gid=0";
+// 🔗 Google Sheets CSV (Übersicht Tab)
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1AmXLFBc-G9i_N6cyrKb8fPvF-CMLf6hXjdq83uG55FY/export?format=csv&gid=0";
 
-function loadData() {
+// 🔐 erlaubte Nutzer
+const users = {
+    "Sam": "SamT19",
+    "Rosi": "RosiG29",
+    "Julian": "JulianZ79",
+    "Polina": "PolinaH73"
+};
+
+function login() {
     const user = document.getElementById("user").value.trim();
+    const code = document.getElementById("code").value.trim();
 
-    if (!user) {
-        alert("Bitte Namen eingeben");
+    if (!users[user] || users[user] !== code) {
+        alert("❌ Falscher Name oder Code");
         return;
     }
 
+    loadData(user);
+}
+
+function loadData(user) {
     fetch(SHEET_URL)
         .then(res => res.text())
         .then(data => {
-            const rows = data.trim().split("\n").map(r => r.split(","));
+
+            const rows = data
+                .trim()
+                .split("\n")
+                .map(r => r.split(","));
 
             let found = false;
 
-            for (let i = 1; i < rows.length; i++) {
+            // ab Zeile 3 im Sheet → Index 2
+            for (let i = 2; i < rows.length; i++) {
                 const name = rows[i][0];
                 const amount = rows[i][1];
 
@@ -82,18 +103,19 @@ function loadData() {
                             <div class="amount">${amount} €</div>
                         </div>
                     `;
+
                     found = true;
                     break;
                 }
             }
 
             if (!found) {
-                alert("❌ Name nicht gefunden");
+                alert("❌ Kein Eintrag im Sheet gefunden");
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Fehler beim Laden der Daten");
+            alert("Fehler beim Laden der Tabelle");
         });
 }
 </script>
