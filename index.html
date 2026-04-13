@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Mein Betrag</title>
+<title>Betrag Login</title>
 
 <style>
 body {
     font-family: Arial;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 80px;
 }
 
 .card {
@@ -20,43 +19,49 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+input {
+    padding: 10px;
+    width: 200px;
+    margin: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
 .amount {
     font-size: 30px;
     color: red;
 }
 </style>
-
 </head>
 
 <body>
 
-<h2>💰 Dein offener Betrag</h2>
+<h2>💰 Offener Betrag</h2>
+
+<div id="login">
+    <input type="text" id="user" placeholder="Name eingeben">
+    <br>
+    <button onclick="loadData()">Anzeigen</button>
+</div>
 
 <div id="app"></div>
 
 <script>
-// 🔗 Google Sheets CSV Link einsetzen
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/DEINE_ID/export?format=csv&gid=1730278130";
 
-// 🔐 Benutzer + Codes
-const users = {
-    "Sam": "SamT19",
-    "Rosi": "RosiG29",
-"Julian": "JulianZ79",
-"Polina": "PolinaH73"
-};
+// 🔗 Google Sheets CSV (HIER EINSETZEN)
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/DEINE_ID/export?format=csv&gid=0";
 
-const params = new URLSearchParams(window.location.search);
-const user = params.get("user");
-const code = params.get("code");
+function loadData() {
+    const user = document.getElementById("user").value.trim();
 
-if (!user || !code || users[user] !== code) {
-    document.body.innerHTML = "<h3>❌ Kein Zugriff</h3>";
-} else {
-    loadData(user);
-}
+    if (!user) {
+        alert("Bitte Namen eingeben");
+        return;
+    }
 
-function loadData(user) {
     fetch(SHEET_URL)
         .then(res => res.text())
         .then(data => {
@@ -64,21 +69,31 @@ function loadData(user) {
 
             let found = false;
 
-            rows.forEach((row, i) => {
-                if (i > 0 && row[0] === user) {
+            for (let i = 1; i < rows.length; i++) {
+                const name = rows[i][0];
+                const amount = rows[i][1];
+
+                if (name === user) {
+                    document.getElementById("login").style.display = "none";
+
                     document.getElementById("app").innerHTML = `
                         <div class="card">
-                            <h3>${row[0]}</h3>
-                            <div class="amount">${row[1]} €</div>
+                            <h3>${name}</h3>
+                            <div class="amount">${amount} €</div>
                         </div>
                     `;
                     found = true;
+                    break;
                 }
-            });
+            }
 
             if (!found) {
-                document.getElementById("app").innerHTML = "Kein Eintrag gefunden";
+                alert("❌ Name nicht gefunden");
             }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Fehler beim Laden der Daten");
         });
 }
 </script>
