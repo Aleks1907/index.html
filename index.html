@@ -108,11 +108,27 @@ function loadData(user) {
                 if (name === user) {
                     document.getElementById("login").style.display = "none";
 
-                    document.getElementById("app").innerHTML = `
-                        <div class="card">
-                            <h3>${name}</h3>
-                            <div class="amount">${amount} €</div>
-                        </div>
+                   document.getElementById("app").innerHTML = `
+    <div class="card">
+        <h3>${name}</h3>
+
+        <div class="amount">${amount} €</div>
+
+        <hr>
+
+        <h4>💳 Zahlungsmöglichkeiten</h4>
+
+        <p>💵 Bar bei Veranstaltungen</p>
+        <p>💳 mit Karte bei Veranstaltungen</p>
+
+        <p>
+            🌐 Online Zahlung:<br>
+            <a href="https://pay.sumup.com/b2c/Q5UNS00S" target="_blank">
+                Jetzt bezahlen
+            </a>
+        </p>
+    </div>
+`;
                     `;
 
                     found = true;
