@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Offener Betrag</title>
+<title>Betrag System</title>
 
 <style>
 body {
@@ -35,12 +35,22 @@ button {
     color: red;
     margin-top: 10px;
 }
+
+a {
+    color: #0066ff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
 </style>
 </head>
 
 <body>
 
-<h2>💰 Offener Betrag</h2>
+<h2>🔐 Login</h2>
 
 <div id="login">
     <input type="text" id="user" placeholder="Name">
@@ -54,26 +64,15 @@ button {
 
 <script>
 
-// 🔗 Google Sheets CSV (Übersicht Tab)
+// 🔗 Google Sheets CSV (Übersicht)
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1AmXLFBc-G9i_N6cyrKb8fPvF-CMLf6hXjdq83uG55FY/export?format=csv&gid=0";
 
-// 🔐 erlaubte Nutzer
+// 🔐 User
 const users = {
-    "Sam": "SamNT19",
-    "Rosi": "RosiRG29",
-    "Julian": "JulianMZ79",
-    "Polina": "PolinaPH73",
-     "Jakob S": "JakobSJ92",
-     "Kohli": "KohliKL28",
-     "Jakob F.": "JakobFK92",
-    "Rini": "RiniLS28",
-    "Pascal": "PascalSZ73",
-    "Raphi": "RaphiML29",
-    "Vinz": "VinzPS39",
-    "Franz": "FranzKS29",
-    
-    
-    
+    "Sam": "SamT19",
+    "Rosi": "RosiG29",
+    "Julian": "JulianZ79",
+    "Polina": "PolinaH73"
 };
 
 function login() {
@@ -93,52 +92,43 @@ function loadData(user) {
         .then(res => res.text())
         .then(data => {
 
-            const rows = data
-                .trim()
-                .split("\n")
-                .map(r => r.split(","));
+            const rows = data.trim().split("\n").map(r => r.split(","));
 
-            let found = false;
-
-            // ab Zeile 3 im Sheet → Index 2
             for (let i = 2; i < rows.length; i++) {
                 const name = rows[i][0];
                 const amount = rows[i][1];
 
                 if (name === user) {
+
                     document.getElementById("login").style.display = "none";
 
-                   document.getElementById("app").innerHTML = `
-    <div class="card">
-        <h3>${name}</h3>
+                    document.getElementById("app").innerHTML = `
+                        <div class="card">
+                            <h3>${name}</h3>
 
-        <div class="amount">${amount} €</div>
+                            <div class="amount">${amount} €</div>
 
-        <hr>
+                            <hr>
 
-        <h4>💳 Zahlungsmöglichkeiten</h4>
+                            <h4>💳 Zahlungsmöglichkeiten</h4>
 
-        <p>💵 Bar bei Veranstaltungen</p>
-        <p>💳 mit Karte bei Veranstaltungen</p>
+                            <p>💵 Bar bei Veranstaltungen</p>
+                            <p>💳 mit Karte bei Veranstaltungen</p>
 
-        <p>
-            🌐 Online Zahlung:<br>
-            <a href="https://pay.sumup.com/b2c/Q5UNS00S" target="_blank">
-                Jetzt bezahlen
-            </a>
-        </p>
-    </div>
-`;
+                            <p>
+                                🌐 Online Zahlung:<br>
+                                <a href="https://pay.sumup.com/b2c/Q5UNS00S" target="_blank">
+                                    Jetzt bezahlen
+                                </a>
+                            </p>
+                        </div>
                     `;
 
-                    found = true;
-                    break;
+                    return;
                 }
             }
 
-            if (!found) {
-                alert("❌ Kein Eintrag im Sheet gefunden");
-            }
+            alert("❌ Kein Eintrag gefunden");
         })
         .catch(err => {
             console.error(err);
