@@ -91,7 +91,19 @@ function login() {
     const user = document.getElementById("user").value.trim();
     const code = document.getElementById("code").value.trim();
 
-    if (!users[user] || users[user] !== code) {
+    async function login() {
+    const user = document.getElementById("user").value.trim();
+    const code = document.getElementById("code").value.trim();
+
+    const hash = await sha256(code);
+
+    if (!users[user] || users[user] !== hash) {
+        alert("❌ Falscher Name oder Code");
+        return;
+    }
+
+    loadData(user);
+} {
         alert("❌ Falscher Name oder Code");
         return;
     }
@@ -146,16 +158,17 @@ function loadData(user) {
             console.error(err);
             alert("Fehler beim Laden der Tabelle");
         });
-}
-</script>
 
-</body>
-</html>
-
-async function sha256(text) {
+    async function sha256(text) {
     const encoder = new TextEncoder();
     const data = encoder.encode(text);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
+}
+</script>
+
+</body>
+</html>
+
